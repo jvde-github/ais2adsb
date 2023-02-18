@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import socket
 import pyais
 from pyais import decode
@@ -8,17 +6,34 @@ from datetime import datetime
 import sys
 
 ICAOmap = {}
-maxICAO = 0xFFFF00
+maxICAO = 0xFFFFFF
 client_socket = None
+SERVER_IP = "192.168.1.235"
+SERVER_PORT = 30003
 
 def generateICAO(mmsi):
     global ICAOmap, maxICAO
     if mmsi not in ICAOmap:
         ICAOmap[mmsi] = maxICAO
-        maxICAO = maxICAO + 1
+        maxICAO = maxICAO - 1
 
     return ICAOmap[mmsi]
 
+def connectClient():
+    global client_socket
+    global SERVER_IP, SERVER_PORT
+
+    while True:
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect((SERVER_IP, SERVER_PORT))
+            break
+        except (socket.error, OSError) as e:
+            print(f"Error: failed to connect to server: error code {e}",file=sys.stderr)
+            time.sleep(10)
+            continue
+
+    print(f"AIS2ADSB: Connected to ADSB server",file=sys.stderr)
 
 def sendBaseStation(decoded):
 
@@ -51,8 +66,15 @@ def sendBaseStation(decoded):
         print(s1)
         print(s2)
     else:
-        client_socket.send(s1.encode())
-        client_socket.send(s2.encode())
+        try:            
+            client_socket.send(s1.encode())
+            client_socket.send(s2.encode())
+        except (socket.error, OSError):
+            print("Connection lost. Reconnecting...")
+            client_socket.close()
+            client_socket = None 
+            connectClient()
+         
 
 if len(sys.argv) < 5:
     print("Usage: python ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <include ships if not empty>")
@@ -68,15 +90,11 @@ SERVER_PORT = int(sys.argv[4])
 if len(sys.argv) == 6:
     includeShips = True
 
-print(f"AIS address: {UDP_IP}", file=sys.stderr)
-print(f"AIS port: {UDP_PORT}", file=sys.stderr)
-print(f"ADSB address: {SERVER_IP}", file=sys.stderr)
-print(f"ADSB port: {SERVER_PORT}", file=sys.stderr)
+print(f"AIS address: {UDP_IP} {UDP_PORT}", file=sys.stderr)
+print(f"ADSB address: {SERVER_IP} {SERVER_PORT}", file=sys.stderr)
+print(f"Ships included: {includeShips}", file=sys.stderr)
 
-print(f"Include Ships: {includeShips}", file=sys.stderr)
-
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((SERVER_IP, SERVER_PORT))
+connectClient()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
@@ -92,7 +110,7 @@ while True:
     try:
         decoded = decode(nmea).asdict()
     except pyais.exceptions.MissingMultipartMessageException as e:
-        print('Skipping message',file=sys.stderr)
+        pass
 
     if decoded['msg_type']==9 or (decoded['msg_type']<=3 and includeShips):
         sendBaseStation(decoded)
