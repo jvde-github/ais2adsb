@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY rootfs/ /
 
-COPY ais2adbs.py /usr/local/bin/
+COPY ais2adsb.py /usr/local/bin/
 
 RUN set -x && \
     pip install pyais
