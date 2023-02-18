@@ -9,11 +9,10 @@ COPY rootfs/ /
 COPY ais2adsb.py /usr/local/bin/
 
 RUN set -x && \
-    pip install pyais
-
+apt-get update -y && apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends --no-install-suggests git python3-bitarray && \
+pip install pyais && \
+#
 # Add Container Version
-RUN set -x && \
-apt-get update -y && apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends --no-install-suggests git && \
 pushd /tmp && \
     branch="##BRANCH##" && \
     [[ "${branch:0:1}" == "#" ]] && branch="main" || true && \
