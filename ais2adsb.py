@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import socket
 import pyais
 from pyais import decode
