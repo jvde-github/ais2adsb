@@ -18,11 +18,11 @@ def generateICAO(mmsi):
     return ICAOmap[mmsi]
 
 
-def toBSformat(decoded):
+def sendBaseStation(decoded):
 
     #print(decoded)
     #print(decoded['mmsi'])
-    print(f"Message from {decoded['mmsi']} of type {decoded['msg_type']}", file=sys.stderr)
+    #print(f"Message from {decoded['mmsi']} of type {decoded['msg_type']}", file=sys.stderr)
 
     ICAO = generateICAO(decoded['mmsi'])
     ICAO = '%X' % ICAO
@@ -66,8 +66,11 @@ SERVER_PORT = int(sys.argv[4])
 if len(sys.argv) == 6:
     includeShips = True
 
-print(f"IP address: {UDP_IP}", file=sys.stderr)
-print(f"Port number: {UDP_PORT}", file=sys.stderr)
+print(f"AIS address: {UDP_IP}", file=sys.stderr)
+print(f"AIS port: {UDP_PORT}", file=sys.stderr)
+print(f"ADSB address: {SERVER_IP}", file=sys.stderr)
+print(f"ADSB port: {SERVER_PORT}", file=sys.stderr)
+
 print(f"Include Ships: {includeShips}", file=sys.stderr)
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -76,19 +79,27 @@ client_socket.connect((SERVER_IP, SERVER_PORT))
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
+next_update_time = time.monotonic() + 10
+count  = 0
+
 while True:
     data, addr = sock.recvfrom(1024)  
     nmea = data.decode()
     # Does not handle multi-part messages which I am skipping for now
+    # Should not be an issue for SAR
     try:
         decoded = decode(nmea).asdict()
     except pyais.exceptions.MissingMultipartMessageException as e:
         print('Skipping message',file=sys.stderr)
 
-    if decoded['msg_type']==9 and includeShips:
-        toBSformat(decoded)
-    if decoded['msg_type']<=3 and includeShips:
-        toBSformat(decoded)
+    if decoded['msg_type']==9 or (decoded['msg_type']<=3 and includeShips):
+        sendBaseStation(decoded)
+        count = count + 1
 
-client_socket.send(message.encode())
+    if time.monotonic() >= next_update_time:
+        t = time.strftime('%Y-%m-%d %H:%M:%S')
+        print(f'{t} Messages sent: {count}')
+        count = 0
+        next_update_time += 10
+
 client_socket.close()
