@@ -7,6 +7,7 @@ import sys
 
 ICAOmap = {}
 maxICAO = 0xFFFF00
+client_socket = None
 
 def generateICAO(mmsi):
     global ICAOmap, maxICAO
@@ -39,25 +40,38 @@ def toBSformat(decoded):
     speed = decoded['speed']
     heading = decoded['course']
 
-    print(f'MSG,3,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},,,{lat},{lon},,,0,0,0,0')
-    print(f'MSG,4,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,,{speed},{heading},,,0,,,,,')
+    global client_socket
 
+    s1 = f'MSG,3,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},,,{lat},{lon},,,0,0,0,0\n'
+    s2 = f'MSG,4,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,,{speed},{heading},,,0,,,,,\n'
 
-if len(sys.argv) < 3:
-    print("Usage: python ais2adsb.py <IP address> <port number>")
+    if client_socket == None:
+        print(s1)
+        print(s2)
+    else:
+        client_socket.send(s1.encode())
+        client_socket.send(s2.encode())
+
+if len(sys.argv) < 5:
+    print("Usage: python ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <include ships if not empty>")
     sys.exit(1)
 
 UDP_IP = sys.argv[1]
 UDP_PORT = int(sys.argv[2])
 includeShips = False
 
-if len(sys.argv) == 4:
+SERVER_IP = sys.argv[3]
+SERVER_PORT = int(sys.argv[4])
+
+if len(sys.argv) == 6:
     includeShips = True
 
 print(f"IP address: {UDP_IP}", file=sys.stderr)
 print(f"Port number: {UDP_PORT}", file=sys.stderr)
 print(f"Include Ships: {includeShips}", file=sys.stderr)
 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((SERVER_IP, SERVER_PORT))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
@@ -69,8 +83,12 @@ while True:
     try:
         decoded = decode(nmea).asdict()
     except pyais.exceptions.MissingMultipartMessageException as e:
-        print()
+        print('Skipping message',file=sys.stderr)
+
     if decoded['msg_type']==9 and includeShips:
         toBSformat(decoded)
     if decoded['msg_type']<=3 and includeShips:
         toBSformat(decoded)
+
+client_socket.send(message.encode())
+client_socket.close()
