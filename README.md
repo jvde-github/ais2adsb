@@ -21,6 +21,8 @@ This will only pass on SAR aircraft messages. For testing it could be interestin
 ```
 python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 1
 ```
+You will see in the VRS main window that the client has connected and hopefully some messages:
+<img width="552" alt="image" src="https://user-images.githubusercontent.com/52420030/219874149-dd0458dd-d804-4fde-9f2e-cf7812f58d3c.png">
 
 Illustration of plotting ships in VRS:
 <img width="1232" alt="image" src="https://user-images.githubusercontent.com/52420030/219868349-5b1dc1e5-33b1-48a0-96a4-9ad4bb49134f.png">
