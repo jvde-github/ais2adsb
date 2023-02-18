@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+echo "Starting Ais2ADSB version $(cat /.CONTAINER_VERSION 2>/dev/null)"

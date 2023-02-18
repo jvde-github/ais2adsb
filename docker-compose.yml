@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   adsb2ais:
-    image: ghcr.io/github-jvde/ais2adsb
+    image: ghcr.io/github-jvde/ais2adsb:edge
     container_name: ais2adsb
     hostname: ais2adsb
     restart: unless-stopped
