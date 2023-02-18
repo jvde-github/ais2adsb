@@ -3,15 +3,21 @@
 
 This simple python scripts converts AIS nmea lines to BaseStation format so it can be read by programs like Virtual Radar Server (VRS). Main purpose is to plot data on SAR aircraft picked up by AIS receivers in ADSB plotting software.
 
-To use, you need to install Python3 and:
+To use, you need to install Python3 and pyais (if not already installed):
 ```
+sudo apt install python3
 pip install pyais
 ```
+Then download the package and enter the directory:
+```
+git clone https://github.com/jvde-github/ais2adsb.git
+cd ais2adsb
+```
+
 Set up VRS so that it can receive BaseStation as a TCP server:
 <img width="659" alt="image" src="https://user-images.githubusercontent.com/52420030/219872223-2d199476-94e4-467c-9943-3cab66e48c4a.png">
 
-
-The input is NMEA input over UDP that most AIS-software can deal with. For this I assume you will have a stream of messages send to the local computer (say `192.168.1.235` at port `4002`). To create BaseStation messages and send to the server use the following command:
+The NMEA input should be send over UDP. Most AIS software including AIS-catcher can easily be set up to achieve this. For now we will assume you will have a stream of messages send to the local computer (say `192.168.1.235` at port `4002`). To create BaseStation messages and send to the server use the following command:
 ```
 python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
 ```
