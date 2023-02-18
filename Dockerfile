@@ -4,12 +4,15 @@ LABEL org.opencontainers.image.source = "https://github.com/jvde-github/ais2adsb
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+COPY rootfs/ /
+
+COPY ais2adsb.py /usr/local/bin
+
 RUN set -x && \
     pip install pyais && \
-    cp ais2adsb.py /usr/local/bin && \
     chmod a+x /usr/local/bin/ais2adsb.py
 
-COPY rootfs/ /
+
 
 # Add Container Version
 RUN set -x && \
