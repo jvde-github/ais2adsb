@@ -13,5 +13,8 @@ if [[ -z "${SBS_TARGET_PORT}" ]]; then
     sleep infinity
 fi
 
+echo "[ais2adsb] Starting ais2adsb version $(cat /.CONTAINER_VERSION 2>/dev/null) with this command line:"
+echo "[ais2adsb] /usr/local/bin/ais2adsb.py ${local_ip[0]} ${UPD_IN_PORT} ${SBS_TARGET_HOST} ${SBS_TARGET_PORT} $INCLUDE_SHIPS"
+
 # shellcheck disable=SC2086
-/usr/local/bin/ais2adsb.py "${local_ip[0]}" "${UPD_IN_PORT}" "${SBS_TARGET_HOST}" "${SBS_TARGET_PORT}" $INCLUDE_SHIPS
+/usr/local/bin/ais2adsb.py "${local_ip[0]}" "${UPD_IN_PORT}" "${SBS_TARGET_HOST}" "${SBS_TARGET_PORT}" $INCLUDE_SHIPS 2>&1 | mawk -W Interactive '{print "[ais2adsb] " $0}'
