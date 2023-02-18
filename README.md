@@ -7,24 +7,24 @@ To use, you need to install Python3 and:
 ```
 pip install pyais
 ```
-The input is NMEA input over UDP that most AIS-software can deal with. For this I assume you will have a stream of messages send to the local computer (say `192.168.1.235` at port `4002`). To create BaseStation messages and write these to a file `out`, give the following command:
+Set up VRS so that it can receive BaseStation as a TCP server:
+<img width="659" alt="image" src="https://user-images.githubusercontent.com/52420030/219872223-2d199476-94e4-467c-9943-3cab66e48c4a.png">
+
+
+The input is NMEA input over UDP that most AIS-software can deal with. For this I assume you will have a stream of messages send to the local computer (say `192.168.1.235` at port `4002`). To create BaseStation messages and send to the server use the following command:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 >out
+python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
 ```
-To pass these messages to VRS, set up this computer as receiver in VRS and transfer via `netcat`:
-```
-cat out | netcat -l 192.168.1.235 30003
-```
+where `192.168.1.239` is the PC running VRS.
 
 This will only pass on SAR aircraft messages. For testing it could be interesting to pass on ship positions as well:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 1 >out
+python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 1
 ```
 
 Illustration of plotting ships in VRS:
 <img width="1232" alt="image" src="https://user-images.githubusercontent.com/52420030/219868349-5b1dc1e5-33b1-48a0-96a4-9ad4bb49134f.png">
 
 To do:
-- Include TCP socket in program so runs on Windows
 - Fine tuning the Basestation messages (as I learn more about ADSB and the software)
 - A lot....
