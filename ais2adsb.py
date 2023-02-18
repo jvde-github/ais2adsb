@@ -39,10 +39,6 @@ def connectClient():
 
 def sendBaseStation(decoded):
 
-    #print(decoded)
-    #print(decoded['mmsi'])
-    #print(f"Message from {decoded['mmsi']} of type {decoded['msg_type']}", file=sys.stderr)
-
     ICAO = generateICAO(decoded['mmsi'])
     ICAO = '%X' % ICAO
 
@@ -58,19 +54,22 @@ def sendBaseStation(decoded):
     lon = decoded['lon']
     speed = decoded['speed']
     heading = decoded['course']
+    callsign = "AIS" + ICAO[4:]
 
     global client_socket
 
-    s1 = f'MSG,3,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},,,{lat},{lon},,,0,0,0,0\n'
-    s2 = f'MSG,4,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,,{speed},{heading},,,0,,,,,\n'
+    #s1 = f'MSG,3,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},,,{lat},{lon},,,0,0,0,0\n'
+    #s2 = f'MSG,4,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,,{speed},{heading},,,0,,,,,\n'
+
+    spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
+    scs = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
 
     if client_socket == None:
-        print(s1)
-        print(s2)
+        print(spos)
     else:
         try:            
-            client_socket.send(s1.encode())
-            client_socket.send(s2.encode())
+            client_socket.send(spos.encode())
+            client_socket.send(scs.encode())
         except (socket.error, OSError):
             print("Connection lost. Reconnecting...")
             client_socket.close()
