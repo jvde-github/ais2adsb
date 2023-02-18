@@ -14,4 +14,4 @@ if [[ -z "${SBS_TARGET_PORT}" ]]; then
 fi
 
 # shellcheck disable=SC2086
-/usr/local/bin/ais2adbs.py "${local_ip[0]}" "${UPD_IN_PORT}" "${SBS_TARGET_HOST}" "${SBS_TARGET_PORT}" $INCLUDE_SHIPS
+/usr/local/bin/ais2adsb.py "${local_ip[0]}" "${UPD_IN_PORT}" "${SBS_TARGET_HOST}" "${SBS_TARGET_PORT}" $INCLUDE_SHIPS
