@@ -46,9 +46,10 @@ def generateICAO(mmsi):
     global ICAOmap, maxICAO
     if mmsi not in ICAOmap:
         proposedICAO = 0xF00000 | (mmsi & 0xFFFFF)
-        print(hex(proposedICAO))
+        print(f'New mmsi: {mmsi}, proposed ICAO: {hex(proposedICAO)}', file=sys.stderr)
         if proposedICAO in ICAOmap.values():
             while True:
+                print(f'ICAO already taken, skipping', file=sys.stderr)
                 proposedICAO = (proposedICAO + 1) & 0xFFFFFF
                 if proposedICAO not in ICAOmap.values():
                     break
@@ -80,15 +81,13 @@ def sendBaseStation(decoded):
     now_utc = datetime.now()
     dstr = now_utc.strftime("%Y/%m/%d")
     tstr = now_utc.strftime("%H:%M:%S.%f")[:-3]
-    if 'alt' in decoded:
-        alt = decoded['alt']
-    else:
-        alt = 0
 
-    lat = decoded['lat']
-    lon = decoded['lon']
-    speed = decoded['speed']
-    heading = decoded['course']
+    alt = decoded.get('alt', 0)
+    lat = decoded.get('lat', None)
+    lon = decoded.get('lon', None)
+    speed = decoded.get('speed', None)
+    heading = decoded.get('course', None)
+
     callsign = "AIS" + ICAO[4:]
 
     global client_socket
@@ -96,21 +95,22 @@ def sendBaseStation(decoded):
     #s1 = f'MSG,3,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},,,{lat},{lon},,,0,0,0,0\n'
     #s2 = f'MSG,4,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,,{speed},{heading},,,0,,,,,\n'
 
-    spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
-    scs = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
+    if lat != None and lon != None and speed != None and heading != None:
+        spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
+        scs = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
 
-    if client_socket == None:
-        print(spos)
-    else:
-        try:            
-            client_socket.send(spos.encode())
-            #client_socket.send(scs.encode())
-        except (socket.error, OSError):
-            print("Connection lost. Reconnecting...")
-            client_socket.close()
-            client_socket = None 
-            connectClient()
-         
+        if client_socket == None:
+            print(spos)
+        else:
+            try:            
+                client_socket.send(spos.encode())
+                client_socket.send(scs.encode())
+            except (socket.error, OSError):
+                print("Connection lost. Reconnecting...")
+                client_socket.close()
+                client_socket = None 
+                connectClient()
+            
 
 if len(sys.argv) < 5:
     print("Usage: python ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <include ships if not empty>")
@@ -126,9 +126,9 @@ SERVER_PORT = int(sys.argv[4])
 if len(sys.argv) == 6:
     includeShips = True
 
-print(f"AIS address: {UDP_IP} {UDP_PORT}", file=sys.stderr)
-print(f"ADSB address: {SERVER_IP} {SERVER_PORT}", file=sys.stderr)
-print(f"Ships included: {includeShips}", file=sys.stderr)
+print(f"Input AIS     : {UDP_IP}:{UDP_PORT}", file=sys.stderr)
+print(f"Output SBS    : {SERVER_IP}:{SERVER_PORT}", file=sys.stderr)
+print(f"Include ships : {includeShips}", file=sys.stderr)
 
 connectClient()
 
@@ -148,7 +148,7 @@ while True:
     except pyais.exceptions.MissingMultipartMessageException as e:
         pass
 
-    if decoded['msg_type']==9 or (decoded['msg_type']<=3 and includeShips):
+    if decoded['msg_type']==9 or includeShips or (decoded['mmsi'] in ICAOmap):
         sendBaseStation(decoded)
         count = count + 1
 
