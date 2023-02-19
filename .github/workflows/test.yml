@@ -10,7 +10,7 @@ jobs:
         os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions/setup-python@v2
       with:
         python-version: 3.7
@@ -19,6 +19,6 @@ jobs:
     - run: pyinstaller ais2adsb.py
     - run: ./dist/ais2adsb/ais2adsb
     - uses: actions/upload-artifact@v3
-      name: "AIS2ADSB ${{matrix.platform}}"
       with:
+        name: "AIS2ADSB ${{matrix.platform}}"
         path: dist/*
