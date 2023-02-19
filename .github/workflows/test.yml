@@ -17,7 +17,7 @@ jobs:
 
     - run: pip install pyais pyinstaller
     - run: pyinstaller ais2adsb.py
-    - run: ./dist/ais2adsb
+    - run: ./dist/ais2adsb/ais2adsb
     - uses: actions/upload-artifact@v2
       with:
         path: dist/*
