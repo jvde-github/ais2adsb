@@ -20,5 +20,5 @@ jobs:
     - run: ./dist/ais2adsb/ais2adsb
     - uses: actions/upload-artifact@v3
       with:
-        name: "AIS2ADSB ${{matrix.platform}}"
+        name: "AIS2ADSB ${{matrix.os}}"
         path: dist/*
