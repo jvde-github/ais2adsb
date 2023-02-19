@@ -15,9 +15,8 @@ jobs:
       with:
         python-version: 3.7
 
-    - run: pip install -r pyais pyinstaller
-    - run: pyinstaller your-code.py
-    # Optionally verify that it works (provided that it does not need user interaction)
+    - run: pip install pyais pyinstaller
+    - run: pyinstaller ais2adsb.py
     - run: ./dist/ais2adsb
     - uses: actions/upload-artifact@v2
       with:
