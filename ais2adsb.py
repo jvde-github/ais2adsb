@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import socket
+import signal
 import pyais
 from pyais import decode
 import time
@@ -116,10 +117,21 @@ def sendBaseStation(decoded):
                 client_socket = None 
                 connectClient()
             
+# this should be fixed so we properly close the sockets etc....
+
+def signalHandler(sig, frame):
+    print('Ctrl+C pressed terminating')
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, signalHandler)
+
+print(f"AIS2ADSB v0.1 - see https://github.com/jvde-github/ais2adsb", file=sys.stderr)
 
 if len(sys.argv) < 5:
     print("Usage: python ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <include ships if not empty>")
     sys.exit(0)
+
 
 UDP_IP = sys.argv[1]
 UDP_PORT = int(sys.argv[2])
@@ -131,7 +143,6 @@ SERVER_PORT = int(sys.argv[4])
 if len(sys.argv) == 6:
     includeShips = True
 
-print(f"AIS2ADSB v0.1 - see https://github.com/jvde-github/ais2adsb", file=sys.stderr)
 
 print(f"Input AIS     : {UDP_IP}:{UDP_PORT}", file=sys.stderr)
 print(f"Output SBS    : {SERVER_IP}:{SERVER_PORT}", file=sys.stderr)
