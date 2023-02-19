@@ -38,7 +38,6 @@ ICAOmap = { 111232512:0x406C79,
             111232509:0x47BFE4
 }
 
-maxICAO = 0xFFFFFF
 client_socket = None
 SERVER_IP = "192.168.1.235"
 SERVER_PORT = 30003
@@ -46,8 +45,14 @@ SERVER_PORT = 30003
 def generateICAO(mmsi):
     global ICAOmap, maxICAO
     if mmsi not in ICAOmap:
-        ICAOmap[mmsi] = maxICAO
-        maxICAO = maxICAO - 1
+        proposedICAO = 0xF00000 | (mmsi & 0xFFFFF)
+        print(hex(proposedICAO))
+        if proposedICAO in ICAOmap.values():
+            while True:
+                proposedICAO = (proposedICAO + 1) & 0xFFFFFF
+                if proposedICAO not in ICAOmap.values():
+                    break
+        ICAOmap[mmsi] = proposedICAO
 
     return ICAOmap[mmsi]
 
@@ -99,7 +104,7 @@ def sendBaseStation(decoded):
     else:
         try:            
             client_socket.send(spos.encode())
-            client_socket.send(scs.encode())
+            #client_socket.send(scs.encode())
         except (socket.error, OSError):
             print("Connection lost. Reconnecting...")
             client_socket.close()
