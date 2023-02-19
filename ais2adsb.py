@@ -41,12 +41,14 @@ ICAOmap = { 111232512:0x406C79,
 client_socket = None
 SERVER_IP = "192.168.1.235"
 SERVER_PORT = 30003
+sent = 0
 
 def generateICAO(mmsi):
     global ICAOmap, maxICAO
     if mmsi not in ICAOmap:
         proposedICAO = 0xF00000 | (mmsi & 0xFFFFF)
-        print(f'New mmsi: {mmsi}, proposed ICAO: {hex(proposedICAO)}', file=sys.stderr)
+        ICAO = '%X' % proposedICAO
+        print(f'New mmsi: {mmsi}, proposed ICAO: {ICAO}', file=sys.stderr)
         if proposedICAO in ICAOmap.values():
             while True:
                 print(f'ICAO already taken, skipping', file=sys.stderr)
@@ -75,36 +77,39 @@ def connectClient():
 
 def sendBaseStation(decoded):
 
-    ICAO = generateICAO(decoded['mmsi'])
-    ICAO = '%X' % ICAO
-
-    now_utc = datetime.now()
-    dstr = now_utc.strftime("%Y/%m/%d")
-    tstr = now_utc.strftime("%H:%M:%S.%f")[:-3]
-
     alt = decoded.get('alt', 0)
     lat = decoded.get('lat', None)
     lon = decoded.get('lon', None)
     speed = decoded.get('speed', None)
     heading = decoded.get('course', None)
 
-    callsign = "AIS" + ICAO[4:]
-
-    global client_socket
-
     #s1 = f'MSG,3,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},,,{lat},{lon},,,0,0,0,0\n'
     #s2 = f'MSG,4,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,,{speed},{heading},,,0,,,,,\n'
 
     if lat != None and lon != None and speed != None and heading != None:
-        spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
-        scs = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
+        ICAO = '%X' % generateICAO(decoded['mmsi'])
 
+        now_utc = datetime.now()
+        dstr = now_utc.strftime("%Y/%m/%d")
+        tstr = now_utc.strftime("%H:%M:%S.%f")[:-3]
+        callsign = "AIS" + ICAO[4:]
+
+        global client_socket
+
+        spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
+        scs = f'MSG,1,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
+        
         if client_socket == None:
             print(spos)
+            print(scs)
         else:
-            try:            
+            try:         
                 client_socket.send(spos.encode())
                 client_socket.send(scs.encode())
+
+                global sent
+                sent = sent + 1
+
             except (socket.error, OSError):
                 print("Connection lost. Reconnecting...")
                 client_socket.close()
@@ -126,6 +131,8 @@ SERVER_PORT = int(sys.argv[4])
 if len(sys.argv) == 6:
     includeShips = True
 
+print(f"AIS2ADSB", file=sys.stderr)
+
 print(f"Input AIS     : {UDP_IP}:{UDP_PORT}", file=sys.stderr)
 print(f"Output SBS    : {SERVER_IP}:{SERVER_PORT}", file=sys.stderr)
 print(f"Include ships : {includeShips}", file=sys.stderr)
@@ -137,6 +144,7 @@ sock.bind((UDP_IP, UDP_PORT))
 
 next_update_time = time.monotonic() + 10
 count  = 0
+sent = 0
 
 while True:
     data, addr = sock.recvfrom(1024)  
@@ -154,8 +162,9 @@ while True:
 
     if time.monotonic() >= next_update_time:
         t = time.strftime('%Y-%m-%d %H:%M:%S')
-        print(f'{t} Messages sent: {count}')
+        print(f'{t} Messages sent: {sent}/{count}')
         count = 0
+        sent = 0
         next_update_time += 10
 
 client_socket.close()
