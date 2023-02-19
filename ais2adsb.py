@@ -119,7 +119,7 @@ def sendBaseStation(decoded):
 
 if len(sys.argv) < 5:
     print("Usage: python ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <include ships if not empty>")
-    sys.exit(1)
+    sys.exit(0)
 
 UDP_IP = sys.argv[1]
 UDP_PORT = int(sys.argv[2])
