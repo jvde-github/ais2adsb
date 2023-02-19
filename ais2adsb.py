@@ -131,7 +131,7 @@ SERVER_PORT = int(sys.argv[4])
 if len(sys.argv) == 6:
     includeShips = True
 
-print(f"AIS2ADSB", file=sys.stderr)
+print(f"AIS2ADSB v0.1 - see https://github.com/jvde-github/ais2adsb", file=sys.stderr)
 
 print(f"Input AIS     : {UDP_IP}:{UDP_PORT}", file=sys.stderr)
 print(f"Output SBS    : {SERVER_IP}:{SERVER_PORT}", file=sys.stderr)
@@ -166,5 +166,5 @@ while True:
         count = 0
         sent = 0
         next_update_time += 10
-
+        
 client_socket.close()
