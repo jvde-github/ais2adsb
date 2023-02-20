@@ -62,7 +62,7 @@ where `192.168.1.239` is the PC running VRS.
 
 This will only pass on SAR aircraft messages. For testing it could be interesting to pass on ship positions as well:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 1
+python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on
 ```
 You will see in the VRS main window that the client has connected and hopefully some messages:
 <img width="552" alt="image" src="https://user-images.githubusercontent.com/52420030/219874149-dd0458dd-d804-4fde-9f2e-cf7812f58d3c.png">
