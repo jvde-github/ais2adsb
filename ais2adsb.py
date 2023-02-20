@@ -165,7 +165,7 @@ while True:
     try:
         decoded = decode(nmea).asdict()
     except pyais.exceptions.MissingMultipartMessageException as e:
-        pass
+        continue
 
     if decoded['msg_type']==9 or includeShips or (decoded['mmsi'] in ICAOmap):
         sendBaseStation(decoded)
