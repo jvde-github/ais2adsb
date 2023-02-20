@@ -25,6 +25,10 @@ python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
 ```
 which reads AIS messages coming in on a computer with IP address `192.168.1.235` and port 4002 and sends it to a Virtual Radar Server running at `192.168.1.239` port 30003. Below some more instructions to set up.
 
+As a side note, if your receiver is AIS-catcher, you can send it to ais2adsb using the `-u` option:
+```
+AIS-catcher -u 192.168.1.235 4002 .....
+```
 There are only a few options. The `FILE` setting will read in a file with a Python Dictionary that maps MMSI numbers to 24-bit ICAO numbers. The Dictionary functionality allows the user to let the program use a pre-defined mapping.  If not provided AIS2ADSB will auto generate ICAO numbers of the form `FXXXXX`  based on the MMSI number or from a default dictionary embedded in the program (courtesy of jonboy1081). The `PRINT on` option will trigger dumping the Dictionary to stderr periodically (so it can be put back in via the FILE option if desired)
 
 The SHIPS setting (on/off, default is off) will instruct the program to also include vessels in the sendout. By default only SAR Aircraft broadcasting AIS message type 9 are included. A callsign based on MMSI will be included by default, unless the option `CALLSIGN off` is given. A full example is:
