@@ -8,7 +8,8 @@ And plotted using the ADS-B data:
 
 <img width="251" alt="image" src="https://user-images.githubusercontent.com/52420030/220178717-199a5d36-ae7e-4d50-9ef8-931759c1085a.png">
 
-This is a nice example where sometimes AIS has better reception than ADS-B.
+This is a nice example where sometimes AIS has better reception than ADS-B. The idea for this tool came from [flygfantast](https://github.com/jvde-github/AIS-catcher/discussions/73) and jonboy1081.
+
 ## Usage
 ```
 Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <options>
@@ -29,7 +30,7 @@ As a side note, if your receiver is AIS-catcher, you can send it to ais2adsb usi
 ```
 AIS-catcher -u 192.168.1.235 4002 .....
 ```
-There are only a few options. The `FILE` setting will read in a file with a Python Dictionary that maps MMSI numbers to 24-bit ICAO numbers. The Dictionary functionality allows the user to let the program use a pre-defined mapping.  If not provided AIS2ADSB will auto generate ICAO numbers of the form `FXXXXX`  based on the MMSI number or from a default dictionary embedded in the program (courtesy of jonboy1081). The `PRINT on` option will trigger dumping the Dictionary to stderr periodically (so it can be put back in via the FILE option if desired)
+There are only a few options. The `FILE` setting will read in a file with a Python Dictionary that maps MMSI numbers to 24-bit ICAO numbers. The Dictionary functionality allows the user to let the program use a pre-defined mapping.  If not provided AIS2ADSB will auto generate ICAO numbers of the form `FXXXXX`  based on the MMSI number or from a default dictionary embedded in the program. The `PRINT on` option will trigger dumping the Dictionary to stderr periodically (so it can be put back in via the FILE option if desired)
 
 The SHIPS setting (on/off, default is off) will instruct the program to also include vessels in the sendout. By default only SAR Aircraft broadcasting AIS message type 9 are included. A callsign based on MMSI will be included by default, unless the option `CALLSIGN off` is given. A full example is:
 ```
