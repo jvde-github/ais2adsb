@@ -2,7 +2,7 @@
 
 This  Python script converts AIS nmea lines to BaseStation format so it can be read by programs like Virtual Radar Server (VRS). Main purpose is to plot data on SAR aircraft picked up by AIS receivers in ADSB plotting software.  The program reads AIS messages coming in as NMEA lines over UDP and sends out ADS-B messages in BaseStation [format](http://woodair.net/sbs/article/barebones42_socket_data.htm) to a server. 
 
-The following is an example of a SAR helicopter broadcasting AIS messages plotted in Virtual Radar Server where reception of AIS is better (courtesy of jonboy1081):
+The following is an example of a SAR helicopter broadcasting AIS messages plotted in Virtual Radar Server using AIS messages send by ais2adsb (courtesy of jonboy1081):
 
 <img width="251" alt="image" src="https://user-images.githubusercontent.com/52420030/220178667-2196cc3d-be5d-4194-a9c3-8d37ac08f672.png">
 
@@ -10,6 +10,7 @@ And plotted using the ADS-B data:
 
 <img width="251" alt="image" src="https://user-images.githubusercontent.com/52420030/220178717-199a5d36-ae7e-4d50-9ef8-931759c1085a.png">
 
+This is a nice example where sometimes AIS has better reception than ADS-B.
 ## Usage
 ```
 Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <options>
