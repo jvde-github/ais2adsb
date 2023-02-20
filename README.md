@@ -40,7 +40,7 @@ python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on FILE mappin
 ## Installation
 
 For Windows users who do not have Python installed there is a package available in the Release sections created via [pyinstaller](https://pyinstaller.org/en/stable/). 
-In general simplest is to install Python3 and pyais (if not already installed):
+Usually it is simplest to install Python3 and pyais (if not already installed):
 ```
 sudo apt install python3
 pip install pyais
