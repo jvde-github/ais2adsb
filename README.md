@@ -73,7 +73,7 @@ The final output in the webinterface of VRS will look something like:
 
 ## Default dictionary
 
-The default MMSI to ICAO mapping is shown below which is kindly provided by jonboy1081. This is also the input format when reading in a dictionary from file: 
+The default MMSI to ICAO mapping is shown below which is kindly provided by jonboy1081 and flygfantast. This is also the input format when reading in a dictionary from file: 
 ```
 { 111232512:0x406C79, 111232511:0x406C82, 111232513:0x406C8E, 111232516:0x406D2C, 111232517:0x406D2D, 111232523:0x406DDB, 111232524:0x406DDC, 111232529:0x406F8B, 111232526:0x406EE7,
   111232528:0x406F2D, 111232518:0x406D21, 111232533:0x406DE5, 111232522:0x406DE6, 111232527:0x406DE7, 111232525:0x406DE8, 111232534:0x406DE9, 111232535:0x406DEA,111232537:0x406DEB,
