@@ -172,6 +172,11 @@ def parseCommandLine():
                 else:
                     raise Exception("Unknown option on command line: " + opt)
         else:
+            # allow old command line for now....
+            if len(sys.argv) == 6 and sys.argv[5] == '1':
+                settings["includeShips"] = True
+                return True
+            
             raise Exception("Command line options should be in key/value pairs")
 
     return True
