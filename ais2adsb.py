@@ -175,6 +175,7 @@ def parseCommandLine():
             # allow old command line for now....
             if len(sys.argv) == 6 and sys.argv[5] == '1':
                 settings["includeShips"] = True
+                print("Warning: command line parameters - please use ais2adsb .... SHIPS on, shortcut will disappear in future versions")
                 return True
             
             raise Exception("Command line options should be in key/value pairs")
