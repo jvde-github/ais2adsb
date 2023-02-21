@@ -123,7 +123,7 @@ def sendBaseStation(decoded):
 # this should be fixed so we properly close the sockets etc....
 
 def printUsage():
-    print("Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP port> <BS server address> <BS server port> <options>")
+    print("Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP IP> <AIS UDP port> <SBS TCP IP> <SBS TCP port> <options>")
     print("Options:")
     print("\tFILE xxxx        : read mmsi <-> ICAO mapping from file xxxx")
     print("\tSHIPS on/off     : include ships in sendout")

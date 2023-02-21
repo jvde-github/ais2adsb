@@ -12,7 +12,7 @@ This is a nice example where sometimes AIS has better reception than ADS-B. The 
 
 ## Usage
 ```
-Usage: (python) ais2adsb.py <AIS UDP IP> <AIS UDP port> <SBS TCP server IP> <SBS TCP server port> <options>
+Usage: (python) ais2adsb.py <AIS UDP IP> <AIS UDP port> <SBS TCP IP> <SBS TCP port> <options>
 Options:
 	FILE xxxx        : read mmsi <-> ICAO mapping from file xxxx
 	SHIPS on/off     : include ships in sendout
