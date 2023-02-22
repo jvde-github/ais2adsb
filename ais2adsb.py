@@ -4,6 +4,7 @@ import socket
 import signal
 import pyais
 from pyais import decode
+import pyais.exceptions
 import ast
 import time
 from datetime import datetime
@@ -217,7 +218,7 @@ while True:
     # Should not be an issue for SAR
     try:
         decoded = decode(nmea).asdict()
-    except pyais.exceptions.MissingMultipartMessageException as e:
+    except:
         continue
 
     if decoded['msg_type']==9 or settings['includeShips'] or (decoded['mmsi'] in ICAOmap):
