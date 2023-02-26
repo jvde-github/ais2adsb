@@ -13,7 +13,7 @@ import sys
 ICAOmap = { 111232512:0x406C79, 111232511:0x406C82, 111232513:0x406C8E, 111232516:0x406D2C, 111232517:0x406D2D, 111232523:0x406DDB, 111232524:0x406DDC, 111232529:0x406F8B, 111232526:0x406EE7,
             111232528:0x406F2D, 111232518:0x406D21, 111232533:0x406DE5, 111232522:0x406DE6, 111232527:0x406DE7, 111232525:0x406DE8, 111232534:0x406DE9, 111232535:0x406DEA,111232537:0x406DEB,
             111232539:0x406DED, 111232531:0x43ECF4, 250002898:0x4CA98D, 250002897:0x4CA98F, 250002902:0x4CA98B, 250004879:0x4CACA4, 250002901:0x4CA98C, 111232519:0x48644B,111232538:0x485F8F,
-            111503003:0x4860B1, 111232509:0x47BFE4, 111265103:0x4AB423 }
+            111503003:0x4860B1, 111232509:0x47BFE4, 111265103:0x4AB423, 111224519:0x346105, 111503031:0x7C7590, 111257008:0x47812B, 111257014:0x478131 }
 
 settings = { "SERVER_IP":"", "SERVER_PORT": 0, "UDP_IP":"" , "UDP_PORT":0, "includeShips":False, "includeCallSign": True, "printDict": False }
 
@@ -52,17 +52,17 @@ def connectClient():
     print(f"Status: Connected to ADSB server",file=sys.stderr)
 
 def loadMMSIdict(str):
-    
+
     print(f'Reading dictionary from MMSI to ICAO from file "{str}"')
 
     with open(str) as f:
         data = f.read()
         d = ast.literal_eval(data)
-  
+
         global ICAOmap
 
         for key in d:
-            if key in ICAOmap and ICAOmap[key] != d[key]:                
+            if key in ICAOmap and ICAOmap[key] != d[key]:
                 print(f'\tWarning: overwrite {key} -> {"%X" % ICAOmap[key]}',file=sys.stderr)
             ICAOmap[key] =  d[key]
     f.close()
@@ -71,7 +71,7 @@ def printDictionary():
     print("{", end="",file=sys.stderr)
     first = True
     for key in ICAOmap:
-        if first: 
+        if first:
             first = False
         else:
             print(",", end="",file=sys.stderr)
@@ -102,12 +102,12 @@ def sendBaseStation(decoded):
 
         spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
         scs = f'MSG,1,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
-        
+
         if client_socket == None:
             print(spos)
             print(scs)
         else:
-            try:         
+            try:
                 client_socket.send(spos.encode())
                 if settings["includeCallSign"]:
                     client_socket.send(scs.encode())
@@ -118,9 +118,9 @@ def sendBaseStation(decoded):
             except (socket.error, OSError):
                 print("Connection lost. Reconnecting...")
                 client_socket.close()
-                client_socket = None 
+                client_socket = None
                 connectClient()
-            
+
 # this should be fixed so we properly close the sockets etc....
 
 def printUsage():
@@ -136,20 +136,20 @@ def signalHandler(sig, frame):
     sys.exit(0)
 
 def parseSwitch(str):
-    if str.upper() == "ON": 
+    if str.upper() == "ON":
         return True
-    elif str.upper() == "OFF": 
+    elif str.upper() == "OFF":
         return False
 
     raise Exception("Unknown switch on command line: " + str)
-    
+
 def parseCommandLine():
     global UDP_IP, UDP_PORT, SERVER_IP,SERVER_PORT, includeShips, includeCallSign
 
     if len(sys.argv) < 5:
         if len(sys.argv) > 1:
             raise Exception("Command line should at least have 4 parameters")
-    
+
         return False
 
     settings["UDP_IP"] = sys.argv[1]
@@ -160,12 +160,12 @@ def parseCommandLine():
 
     if len(sys.argv) >= 6:
         if len(sys.argv) >= 7 and len(sys.argv) % 2 == 1:
-            for i in range(5,  len(sys.argv),2):   
+            for i in range(5,  len(sys.argv),2):
                 opt = sys.argv[i].upper()
                 if opt == 'SHIPS':
                     settings["includeShips"] = parseSwitch(sys.argv[i+1])
                 elif opt == 'PRINT':
-                    settings["printDict"] = parseSwitch(sys.argv[i+1])                    
+                    settings["printDict"] = parseSwitch(sys.argv[i+1])
                 elif opt == 'FILE':
                     loadMMSIdict(sys.argv[i+1])
                 elif opt == 'CALLSIGN':
@@ -178,7 +178,7 @@ def parseCommandLine():
                 settings["includeShips"] = True
                 print("Warning: command line parameters - please use ais2adsb .... SHIPS on, shortcut will disappear in future versions")
                 return True
-            
+
             raise Exception("Command line options should be in key/value pairs")
 
     return True
@@ -234,5 +234,5 @@ while True:
         count = 0
         sent = 0
         next_update_time += 10
-        
+
 client_socket.close()
