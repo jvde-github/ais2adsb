@@ -4,6 +4,9 @@
 readarray -td' ' local_ip <<< "$(hostname -I)"
 UPD_IN_PORT="${UPD_IN_PORT:-9000}"
 
+ais_cmd="/usr/local/bin/ais2adsb.py"
+ais_params=()
+
 if [[ -z "${SBS_TARGET_HOST}" ]]; then
     echo "[ais2adsb] FATAL: SBS_TARGET_HOST not defined"
     sleep infinity
@@ -13,8 +16,19 @@ if [[ -z "${SBS_TARGET_PORT}" ]]; then
     sleep infinity
 fi
 
+ais_params+=("${local_ip[0]}")
+ais_params+=("${UPD_IN_PORT}")
+ais_params+=("${SBS_TARGET_HOST}")
+ais_params+=("${SBS_TARGET_PORT}")
+
+[[ -n "${INCLUDE_SHIPS}" ]] && ais_params+=("SHIPS on") || true
+[[ -n "${CALLSIGN}" ]] && ais_params+=("CALLSIGN on") || true
+
+# shellcheck disable=SC2048,SC2086
+execstring="$(echo ${ais_cmd} ${ais_params[*]} | xargs)"
+
 echo "[ais2adsb] Starting ais2adsb version $(cat /.CONTAINER_VERSION 2>/dev/null) with this command line:"
-echo "[ais2adsb] /usr/local/bin/ais2adsb.py ${local_ip[0]} ${UPD_IN_PORT} ${SBS_TARGET_HOST} ${SBS_TARGET_PORT} $INCLUDE_SHIPS"
+echo "[ais2adsb] ${execstring}"
 
 # shellcheck disable=SC2086
-/usr/local/bin/ais2adsb.py "${local_ip[0]}" "${UPD_IN_PORT}" "${SBS_TARGET_HOST}" "${SBS_TARGET_PORT}" $INCLUDE_SHIPS 2>&1 | mawk -W Interactive '{print "[ais2adsb] " $0}'
+exec ${execstring} 2>&1 | mawk -W Interactive '{print "[ais2adsb] " $0}'
