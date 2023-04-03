@@ -229,7 +229,7 @@ def parseCommandLine():
 
 signal.signal(signal.SIGINT, signalHandler)
 
-print(f"AIS2ADSB v0.11 - see https://github.com/jvde-github/ais2adsb", file=sys.stderr)
+print(f"AIS2ADSB v0.12- see https://github.com/jvde-github/ais2adsb", file=sys.stderr)
 
 try:
     if not parseCommandLine():
