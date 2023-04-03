@@ -12,13 +12,14 @@ This is a nice example where sometimes AIS has better reception than ADS-B. The 
 
 ## Usage
 ```
-Usage: (python) ais2adsb.py <AIS UDP IP> <AIS UDP port> <SBS TCP IP> <SBS TCP port> <options>
+AIS2ADSB v0.14- see https://github.com/jvde-github/ais2adsb
+Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP IP> <AIS UDP port> <SBS TCP IP> <SBS TCP port> <options>
 Options:
 	FILE xxxx        : read mmsi <-> ICAO mapping from file xxxx
 	SHIPS on/off     : include ships in sendout
 	CALLSIGN on/off  : include generated callsigns in sendout
 	PRINT on/off     : print mmsi/ICAO dictionary
-
+	SAVE xxxx        : save mmsi/ICAO dictionary to file xxxx
 ```
 This is the minimal command line:
 ```
