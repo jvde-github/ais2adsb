@@ -1,6 +1,8 @@
 #!/usr/bin/with-contenv bash
 #shellcheck shell=bash
 
+mkdir -p /data
+
 readarray -td' ' local_ip <<< "$(hostname -I)"
 UPD_IN_PORT="${UPD_IN_PORT:-9000}"
 
@@ -20,6 +22,8 @@ ais_params+=("${local_ip[0]}")
 ais_params+=("${UPD_IN_PORT}")
 ais_params+=("${SBS_TARGET_HOST}")
 ais_params+=("${SBS_TARGET_PORT}")
+
+ais_params+=("SAVE /data/ais2adsb.map FILE /data/ais2adsb.map")
 
 [[ -n "${INCLUDE_SHIPS}" ]] && ais_params+=("SHIPS on") || true
 [[ -n "${CALLSIGN}" ]] && ais_params+=("CALLSIGN on") || true
