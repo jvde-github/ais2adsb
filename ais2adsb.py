@@ -37,7 +37,7 @@ ICAOmap = { 111232512:0x406C79, 111232511:0x406C82, 111232513:0x406C8E, 11123251
             111261507:0x48DA8F, 111265583:0x4AAA4A
           }
 
-settings = { "SERVER_IP":"", "SERVER_PORT": 0, "UDP_IP":"" , "UDP_PORT":0, "includeShips":False, "includeCallSign": True, "printDict": False }
+settings = {"DICT_FILE": None, "SERVER_IP":"", "SERVER_PORT": 0, "UDP_IP":"" , "UDP_PORT":0, "includeShips":False, "includeCallSign": True, "printDict": False }
 
 client_socket = None
 sent = 0
@@ -77,30 +77,46 @@ def loadMMSIdict(str):
 
     print(f'Reading dictionary from MMSI to ICAO from file "{str}"')
 
-    with open(str) as f:
-        data = f.read()
-        d = ast.literal_eval(data)
+    try:
+        with open(str) as f:
+            data = f.read()
+            d = ast.literal_eval(data)
 
-        global ICAOmap
+            global ICAOmap
 
-        for key in d:
-            if key in ICAOmap and ICAOmap[key] != d[key]:
-                print(f'\tWarning: overwrite {key} -> {"%X" % ICAOmap[key]}',file=sys.stderr)
-            ICAOmap[key] =  d[key]
-    f.close()
+            for key in d:
+                if key in ICAOmap and ICAOmap[key] != d[key]:
+                    print(f'\tWarning: overwrite {key} -> {"%X" % ICAOmap[key]}',file=sys.stderr)
+                ICAOmap[key] =  d[key]
 
-def printDictionary():
-    print("{", end="",file=sys.stderr)
+            if f and not f.closed:
+                f.close()
+
+    
+    except FileNotFoundError:
+        print(f'\tWarning: File "{str}" not found.',file=sys.stderr)
+
+
+def printDictionary(filename=None):
+    output_stream = sys.stderr
+    if filename is not None:
+        output_stream = open(filename, 'w')
+        print(f'\tWriting to file',file=sys.stderr)
+
+    print("{", end="", file=output_stream)
     first = True
     for key in ICAOmap:
         if first:
             first = False
         else:
-            print(",", end="",file=sys.stderr)
+            print(",", end="", file=output_stream)
 
-        print(f"{key}:0x{'%X'%ICAOmap[key]}", end="",file=sys.stderr)
+        print(f"{key}:0x{'%X'%ICAOmap[key]}", end="", file=output_stream)
 
-    print("}",file=sys.stderr)
+    print("}", file=output_stream)
+    if filename is not None:
+        output_stream.close()
+
 
 def sendBaseStation(decoded):
 
@@ -152,9 +168,12 @@ def printUsage():
     print("\tSHIPS on/off     : include ships in sendout")
     print("\tCALLSIGN on/off  : include generated callsigns in sendout")
     print("\tPRINT on/off     : print mmsi/ICAO dictionary")
+    print("\tPRINT xxxx       : save mmsi/ICAO dictionary to file xxxx")
 
 def signalHandler(sig, frame):
     print('Ctrl+C pressed terminating')
+    if settings['printDict']:
+        printDictionary(settings["DICT_FILE"])
     sys.exit(0)
 
 def parseSwitch(str):
@@ -190,6 +209,8 @@ def parseCommandLine():
                     settings["printDict"] = parseSwitch(sys.argv[i+1])
                 elif opt == 'FILE':
                     loadMMSIdict(sys.argv[i+1])
+                elif opt == 'SAVE':
+                    settings['DICT_FILE'] = sys.argv[i+1]
                 elif opt == 'CALLSIGN':
                     settings["includeCallSign"] = parseSwitch(sys.argv[i+1])
                 else:
@@ -223,6 +244,8 @@ print(f"Output SBS       : {settings['SERVER_IP']}:{settings['SERVER_PORT']}", f
 print(f"Include ships    : {settings['includeShips']}", file=sys.stderr)
 print(f"Include callsign : {settings['includeCallSign']}", file=sys.stderr)
 print(f"Print Dictionary : {settings['printDict']}", file=sys.stderr)
+print(f"Save Dictionary  : {settings['DICT_FILE']}", file=sys.stderr)
+
 
 connectClient()
 
@@ -251,7 +274,9 @@ while True:
         t = time.strftime('%Y-%m-%d %H:%M:%S')
         print(f'{t} Messages sent: {sent}/{count}')
         if settings['printDict']:
-            printDictionary()
+            printDictionary();
+        if settings["DICT_FILE"] != None:
+            printDictionary(settings["DICT_FILE"])
 
         count = 0
         sent = 0
