@@ -246,7 +246,6 @@ print(f"Include callsign : {settings['includeCallSign']}", file=sys.stderr)
 print(f"Print Dictionary : {settings['printDict']}", file=sys.stderr)
 print(f"Save Dictionary  : {settings['DICT_FILE']}", file=sys.stderr)
 
-
 connectClient()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -255,6 +254,7 @@ sock.bind((settings['UDP_IP'], settings['UDP_PORT']))
 next_update_time = time.monotonic() + 10
 count  = 0
 sent = 0
+update = False
 
 while True:
     data, addr = sock.recvfrom(1024)  
@@ -280,6 +280,6 @@ while True:
 
         count = 0
         sent = 0
-        next_update_time += 10
+        next_update_time += 30*60
 
 client_socket.close()
