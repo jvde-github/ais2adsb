@@ -1,14 +1,16 @@
 version: '3.8'
 services:
   adsb2ais:
-    image: ghcr.io/github-jvde/ais2adsb:edge
-    container_name: ais2adsb
-    hostname: ais2adsb
-    restart: unless-stopped
-    environment:
-       - SBS_TARGET_HOST=ip_address_of_VRS_instance
-       - SBS_TARGET_PORT=port_of_VRS_instance
-       - INCLUDE_SHIPS=true   # leave empty to forward only SAR aircraft
-       - CALLSIGN=true        # leave empty to exclude generated callsigns in output
-    ports:
-       - 9000:9000/udp        # if you send your NMEA UDP to a different port, change this to xxxx:9000/udp
+   image: ghcr.io/github-jvde/ais2adsb:edge
+   container_name: ais2adsb
+   hostname: ais2adsb
+   restart: unless-stopped
+   environment:
+      - SBS_TARGET_HOST=ip_address_of_VRS_instance
+      - SBS_TARGET_PORT=port_of_VRS_instance
+      - INCLUDE_SHIPS=true   # leave empty to forward only SAR aircraft
+      - CALLSIGN=true        # leave empty to exclude generated callsigns in output
+   ports:
+      - 9000:9000/udp        # if you send your NMEA UDP to a different port, change this to xxxx:9000/udp
+   volumes:
+      - /opt/ais/ais2adsb:/data
