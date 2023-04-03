@@ -168,7 +168,7 @@ def printUsage():
     print("\tSHIPS on/off     : include ships in sendout")
     print("\tCALLSIGN on/off  : include generated callsigns in sendout")
     print("\tPRINT on/off     : print mmsi/ICAO dictionary")
-    print("\tPRINT xxxx       : save mmsi/ICAO dictionary to file xxxx")
+    print("\tSAVE xxxx       : save mmsi/ICAO dictionary to file xxxx")
 
 def signalHandler(sig, frame):
     print('Ctrl+C pressed terminating')
