@@ -23,7 +23,7 @@ Options:
 ```
 This is the minimal command line:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
+python3 ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
 ```
 which reads AIS messages coming in on a computer with IP address `192.168.1.235` and port 4002 and sends it to VRS running at `192.168.1.239` port 30003. Below some more instructions to set up.
 
@@ -36,7 +36,7 @@ There are only a few options. The `FILE` setting will read in a file with a Pyth
 
 The SHIPS setting (on/off, default is off) will instruct the program to also include vessels in the sendout. By default only SAR Aircraft broadcasting AIS message type 9 are included. A callsign based on MMSI will be included by default, unless the option `CALLSIGN off` is given. A full example is:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on FILE mapping.dict PRINT on CALLSIGN off
+python3 ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on FILE mapping.dict PRINT on CALLSIGN off
 ```
 
 ## Installation
@@ -44,8 +44,8 @@ python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on FILE mappin
 For Windows users who do not have Python installed there is a package available in the Release sections created via [pyinstaller](https://pyinstaller.org/en/stable/). 
 Usually it is simplest though to install Python3 and pyais (if not already installed):
 ```
-sudo apt install python3
-pip install pyais
+sudo apt install python3 pip
+pip3 install pyais
 ```
 Then download the current package and enter the directory:
 ```
@@ -58,13 +58,13 @@ Set up for example VRS so that it can receive BaseStation messages as a TCP serv
 
 The NMEA input should be send over UDP. Most AIS software including AIS-catcher can easily be set up to achieve this, see above. For now we will assume you will have a stream of messages send to the local computer (say `192.168.1.235` at port `4002`). To create BaseStation messages and send to the server use the following command:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
+python3 ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003
 ```
 where `192.168.1.239` is the PC running VRS.
 
 This will only pass on SAR aircraft messages. For testing it could be interesting to pass on ship positions as well:
 ```
-python ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on
+python3 ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on
 ```
 You will see in the VRS main window that the client has connected and hopefully some messages have been sent as well:
 <img width="552" alt="image" src="https://user-images.githubusercontent.com/52420030/219874149-dd0458dd-d804-4fde-9f2e-cf7812f58d3c.png">
