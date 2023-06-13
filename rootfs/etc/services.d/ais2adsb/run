@@ -1,6 +1,10 @@
 #!/usr/bin/with-contenv bash
 #shellcheck shell=bash
 
+source /scripts/common 
+APPNAME="ais2adsb"
+s6wrap=(s6wrap --quiet --timestamps --prepend="${APPNAME}")
+
 mkdir -p /data
 
 readarray -td' ' local_ip <<< "$(hostname -I)"
@@ -10,11 +14,11 @@ ais_cmd="/usr/local/bin/ais2adsb.py"
 ais_params=()
 
 if [[ -z "${SBS_TARGET_HOST}" ]]; then
-    echo "[ais2adsb] FATAL: SBS_TARGET_HOST not defined"
+    "${s6wrap[@]}" --args echo "FATAL: SBS_TARGET_HOST not defined"
     sleep infinity
 fi
 if [[ -z "${SBS_TARGET_PORT}" ]]; then
-    echo "[ais2adsb] FATAL: SBS_TARGET_IP not defined"
+    "${s6wrap[@]}" --args echo "FATAL: SBS_TARGET_IP not defined"
     sleep infinity
 fi
 
@@ -25,14 +29,23 @@ ais_params+=("${SBS_TARGET_PORT}")
 
 ais_params+=("SAVE /data/ais2adsb.map FILE /data/ais2adsb.map")
 
-[[ -n "${INCLUDE_SHIPS}" ]] && ais_params+=("SHIPS on") || true
-[[ -n "${CALLSIGN}" ]] && ais_params+=("CALLSIGN on") || true
+if chk_enabled "${INCLUDE_SHIPS}"; then
+    ais_params+=("SHIPS on")
+else
+    ais_params+=("SHIPS off")
+fi
+
+if chk_enabled "${CALLSIGN}"; then
+    ais_params+=("CALLSIGN on")
+else
+    ais_params+=("CALLSIGN off")
+fi
 
 # shellcheck disable=SC2048,SC2086
 execstring="$(echo ${ais_cmd} ${ais_params[*]} | xargs)"
 
-echo "[ais2adsb] Starting ais2adsb version $(cat /.CONTAINER_VERSION 2>/dev/null) with this command line:"
-echo "[ais2adsb] ${execstring}"
+"${s6wrap[@]}" --args echo "Starting ais2adsb version $(cat /.CONTAINER_VERSION 2>/dev/null || true) with this command line:"
+"${s6wrap[@]}" --args echo "${execstring}"
 
-# shellcheck disable=SC2086
-exec ${execstring} 2>&1 | mawk -W Interactive '{print "[ais2adsb] " $0}'
+# shellcheck disable=SC2086,SC2048
+exec "${s6wrap[@]}" --args ${execstring}
