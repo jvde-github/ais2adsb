@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  adsb2ais:
+  ais2adsb:
    image: ghcr.io/jvde-github/ais2adsb:edge
    container_name: ais2adsb
    hostname: ais2adsb
