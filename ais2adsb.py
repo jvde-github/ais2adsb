@@ -275,8 +275,7 @@ while True:
     except:
         continue
                 
-# removed  or (decoded['mmsi'] in ICAOmap) in below
-    if decoded['msg_type']==9 or settings['includeShips']:
+    if decoded['msg_type']==9 or settings['includeShips'] or (decoded['mmsi'] in ICAOmap):
         sendBaseStation(decoded)
         count = count + 1
 
