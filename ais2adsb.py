@@ -274,8 +274,9 @@ while True:
         decoded = decode(nmea).asdict()
     except:
         continue
-
-    if decoded['msg_type']==9 or settings['includeShips'] or (decoded['mmsi'] in ICAOmap):
+                
+# removed  or (decoded['mmsi'] in ICAOmap) in below
+    if decoded['msg_type']==9 or settings['includeShips']:
         sendBaseStation(decoded)
         count = count + 1
 
