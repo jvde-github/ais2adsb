@@ -147,10 +147,12 @@ def sendBaseStation(decoded):
         dstr = now_utc.strftime("%Y/%m/%d")
         tstr = now_utc.strftime("%H:%M:%S.%f")[:-3]
         callsign = "V:" + ("00000" + str(decoded['mmsi']) )[-6:]
+        ground_flag = 1 if alt < 1 else 0
+        alt_str = "" if alt < 1 else str(alt)
 
         global client_socket
 
-        spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt},{speed},{heading},{lat},{lon},,,,,,0\n'
+        spos = f'MSG,2,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},,{alt_str},{speed},{heading},{lat},{lon},,,,,,{ground_flag}\n'
         scs = f'MSG,1,1,0,{ICAO},1,{dstr},{tstr},{dstr},{tstr},{callsign},,,,,,,,,,,\n'
 
         if client_socket == None:
