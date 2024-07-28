@@ -218,7 +218,7 @@ def parseCommandLine():
                 opt = sys.argv[i].upper()
                 if opt == 'SAR':
                     settings["includeSAR"] = parseSwitch(sys.argv[i+1])
-                if opt == 'SHIPS':
+                elif opt == 'SHIPS':
                     settings["includeShips"] = parseSwitch(sys.argv[i+1])
                 elif opt == 'PRINT':
                     settings["printDict"] = parseSwitch(sys.argv[i+1])
