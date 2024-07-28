@@ -49,7 +49,7 @@ ICAOmap = { 111232512:0x406C79, 111232511:0x406C82, 111232513:0x406C8E, 11123251
             419000764:0x8006A0, 211340860:0x3EAF56, 32039:0x320069
           }
 
-settings = {"DICT_FILE": None, "SERVER_IP":"", "SERVER_PORT": 0, "UDP_IP":"" , "UDP_PORT":0, "includeShips":False, "includeCallSign": True, "printDict": False }
+settings = {"DICT_FILE": None, "SERVER_IP":"", "SERVER_PORT": 0, "UDP_IP":"" , "UDP_PORT":0, "includeSAR":True, "includeShips":False, "includeCallSign": True, "printDict": False }
 
 client_socket = None
 sent = 0
@@ -177,6 +177,7 @@ def printUsage():
     print("Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP IP> <AIS UDP port> <SBS TCP IP> <SBS TCP port> <options>")
     print("Options:")
     print("\tFILE xxxx        : read mmsi <-> ICAO mapping from file xxxx")
+    print("\tSAR on/off       : include SAR aircraft in sendout")
     print("\tSHIPS on/off     : include ships in sendout")
     print("\tCALLSIGN on/off  : include generated callsigns in sendout")
     print("\tPRINT on/off     : print mmsi/ICAO dictionary")
@@ -215,6 +216,8 @@ def parseCommandLine():
         if len(sys.argv) >= 7 and len(sys.argv) % 2 == 1:
             for i in range(5,  len(sys.argv),2):
                 opt = sys.argv[i].upper()
+                if opt == 'SAR':
+                    settings["includeSAR"] = parseSwitch(sys.argv[i+1])
                 if opt == 'SHIPS':
                     settings["includeShips"] = parseSwitch(sys.argv[i+1])
                 elif opt == 'PRINT':
@@ -253,6 +256,7 @@ except Exception as e:
 
 print(f"Input AIS        : {settings['UDP_IP']}:{settings['UDP_PORT']}", file=sys.stderr)
 print(f"Output SBS       : {settings['SERVER_IP']}:{settings['SERVER_PORT']}", file=sys.stderr)
+print(f"Include SAR      : {settings['includeSAR']}", file=sys.stderr)
 print(f"Include ships    : {settings['includeShips']}", file=sys.stderr)
 print(f"Include callsign : {settings['includeCallSign']}", file=sys.stderr)
 print(f"Print Dictionary : {settings['printDict']}", file=sys.stderr)
@@ -278,7 +282,8 @@ while True:
     except:
         continue
                 
-    if decoded['msg_type']==9 or settings['includeShips'] or (decoded['mmsi'] in ICAOmap):
+    if (((decoded['msg_type'] == 9 or (decoded['mmsi'] in ICAOmap)) and settings['includeSAR'])
+            or (decoded['msg_type'] != 9 and settings['includeShips'])):
         sendBaseStation(decoded)
         count = count + 1
 

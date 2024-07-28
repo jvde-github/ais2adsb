@@ -16,6 +16,7 @@ AIS2ADSB v0.14- see https://github.com/jvde-github/ais2adsb
 Usage: (python) ais2adsb.py <AIS UDP address> <AIS UDP IP> <AIS UDP port> <SBS TCP IP> <SBS TCP port> <options>
 Options:
 	FILE xxxx        : read mmsi <-> ICAO mapping from file xxxx
+	SAR on/off       : include SAR aircraft in sendout
 	SHIPS on/off     : include ships in sendout
 	CALLSIGN on/off  : include generated callsigns in sendout
 	PRINT on/off     : print mmsi/ICAO dictionary
@@ -34,7 +35,7 @@ AIS-catcher -u 192.168.1.235 4002 .....
 
 There are only a few options. The `FILE` setting will read in a file with a Python Dictionary that maps MMSI numbers to 24-bit ICAO numbers. The Dictionary functionality allows the user to let the program use a pre-defined mapping.  If not provided ais2adsb will auto generate ICAO numbers of the form `FXXXXX`  based on the MMSI number or from a default dictionary embedded in the program. The `PRINT on` option will trigger dumping the Dictionary to stderr periodically (so it can be put back in via the FILE option if desired)
 
-The SHIPS setting (on/off, default is off) will instruct the program to also include vessels in the sendout. By default only SAR Aircraft broadcasting AIS message type 9 are included. A callsign based on MMSI will be included by default, unless the option `CALLSIGN off` is given. A full example is:
+The SAR setting (on/off, default is on) will instruct the program to also include SAR aircraft in the sendout. By default only SAR Aircraft broadcasting AIS message type 9 are included. The SHIPS setting (on/off, default is off) will instruct the program to also include vessels in the sendout. A callsign based on MMSI will be included by default, unless the option `CALLSIGN off` is given. A full example is:
 ```
 python3 ./ais2adsb.py 192.168.1.235 4002 192.168.1.239 30003 SHIPS on FILE mapping.dict PRINT on CALLSIGN off
 ```
