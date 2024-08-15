@@ -10,7 +10,7 @@ COPY ais2adsb.py /usr/local/bin/
 
 RUN set -x && \
 apt-get update -y && apt-get install -q -o Dpkg::Options::="--force-confnew" -y --no-install-recommends --no-install-suggests git python3-bitarray && \
-pip install pyais && \
+pip3 install --break-system-packages --no-cache-dir pyais && \
 #
 # Add Container Version
 pushd /tmp && \
