@@ -51,6 +51,23 @@ class FilterTests(unittest.TestCase):
         return {"sar": sar, "ships": ships, "callsign": True,
                 "sbs_ip": "x", "sbs_port": 0, "save_file": None, "print_dict": False}
 
+    def test_empty_payload_is_not_forwarded(self):
+        decoder = ais2adsb.aiscat.Decoder()
+        decoder.feed(b"!AIVDM,1,1,,A,,0*26\r\n")
+        decoded = decoder.next()
+        # Newer decoders may reject the empty payload before it reaches us.
+        if decoded is not None:
+            for sar in (False, True):
+                for ships in (False, True):
+                    with self.subTest(sar=sar, ships=ships):
+                        self.assertFalse(ais2adsb.shouldForward(
+                            decoded, self._settings(sar=sar, ships=ships)))
+
+    def test_missing_type_is_not_forwarded_even_for_known_mmsi(self):
+        ais2adsb.ICAOmap[42] = 0x123456
+        self.assertFalse(ais2adsb.shouldForward(
+            {"mmsi": 42}, self._settings(sar=True, ships=True)))
+
     def test_sar_passes_when_sar_on(self):
         self.assertTrue(ais2adsb.shouldForward({"type": 9, "mmsi": 1}, self._settings()))
 

@@ -145,6 +145,8 @@ def sendBaseStation(decoded: dict, settings: dict) -> None:
 
 
 def shouldForward(decoded: dict, settings: dict) -> bool:
+    if "type" not in decoded:
+        return False
     is_sar = decoded["type"] == 9 or decoded["mmsi"] in ICAOmap
     if is_sar and settings["sar"]:
         return True
